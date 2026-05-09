@@ -20,7 +20,7 @@
         .subtitle{ color:var(--blue-700); font-size:clamp(0.95rem,3vw,1.15rem); margin-top:.25rem; }
         .highlight-keyword{ color:var(--orange); font-weight:800; }
 
-        .btn{ color:#fff; border:none; padding:.75rem 1.2rem; border-radius:10px; cursor:pointer; font-weight:800; transition:transform .08s ease, box-shadow .2s ease; min-width:120px; height:48px; display:inline-flex; align-items:center; justify-content:center; font-size: 1rem; }
+        .btn{ color:#fff; border:none; padding:.75rem 1.2rem; border-radius:10px; cursor:pointer; font-weight:800; transition:transform .08s ease, box-shadow .2s ease, background-color .2s; min-width:120px; height:48px; display:inline-flex; align-items:center; justify-content:center; font-size: 1rem; }
         .btn:hover{ transform:translateY(-2px); box-shadow:0 6px 14px rgba(0,0,0,.12); }
         .btn:active{ transform:translateY(0); }
         .btn-primary{ background:var(--orange); } .btn-primary:hover{ background:var(--orange-700); }
@@ -51,10 +51,17 @@
         .answer-buttons{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; width:100%; max-width:580px; }
         .answer-buttons .btn{ flex:1; min-width:90px; max-width:200px; height:auto; min-height:56px; padding:.7rem .8rem; border-radius:14px; font-size:clamp(.85rem,2.2vw,1.05rem); flex-direction:column; gap:.2rem; }
         
-        .btn-recta{ background:#5b7ff5; } .btn-semirrecta{ background:#e05c9a; } .btn-segmento{ background:#2eaab5; } 
-        .btn-secantes{ background:#9b59b6; } .btn-paralelas{ background:#27ae60; } .btn-perpendiculares{ background:#e67e22; } 
-        .btn-agudo{ background:#e91e63; } .btn-recto{ background:#3f51b5; } .btn-obtuso{ background:#ff5722; } 
-        .btn-llano{ background:#607d8b; } .btn-completo{ background:#795548; } 
+        /* ✅ DE QWEN: Agrupación eficiente de botones naranjas + DE GLM: Transición suave */
+        .btn-recta, .btn-semirrecta, .btn-segmento,
+        .btn-secantes, .btn-paralelas, .btn-perpendiculares,
+        .btn-agudo, .btn-recto, .btn-obtuso, .btn-llano, .btn-completo { 
+            background: var(--orange); 
+        }
+        .btn-recta:hover, .btn-semirrecta:hover, .btn-segmento:hover,
+        .btn-secantes:hover, .btn-paralelas:hover, .btn-perpendiculares:hover,
+        .btn-agudo:hover, .btn-recto:hover, .btn-obtuso:hover, .btn-llano:hover, .btn-completo:hover { 
+            background: var(--orange-700); 
+        }
 
         .btn-answer-correct{ background:var(--green) !important; }
         .btn-answer-wrong{ background:var(--red) !important; animation: shake .3s ease-in-out; }
@@ -65,7 +72,10 @@
         .partes-svg-area svg{ width:100%; height:auto; max-height:240px; }
         .partes-buttons{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; width:100%; max-width:580px; }
         .partes-buttons .btn{ flex:1; min-width:120px; max-width:180px; height:auto; min-height:52px; padding:.65rem .8rem; border-radius:14px; font-size:clamp(.85rem,2vw,1rem); }
-        .parte-btn{ background:#8e44ad; } .parte-btn.correct-parte{ background:var(--green); } .parte-btn.wrong-parte{ background:var(--red); animation: shake .3s; }
+        .parte-btn{ background: var(--orange); } 
+        .parte-btn:hover{ background: var(--orange-700); }
+        .parte-btn.correct-parte{ background:var(--green) !important; } 
+        .parte-btn.wrong-parte{ background:var(--red) !important; animation: shake .3s; }
 
         .protractor-wrapper{ display:flex; flex-direction:column; align-items:center; gap:.8rem; width:100%; flex:1; }
         .protractor-area{ background:#f0f4ff; border-radius:16px; border:2px solid #d0d8f0; width:100%; max-width:600px; display:flex; align-items:center; justify-content:center; min-height:280px; padding:.5rem; overflow:hidden; position:relative; touch-action: none; }
@@ -100,7 +110,7 @@
     <section class="screen active" id="startScreen">
         <header><h1>📐 Geometría: Líneas y Ángulos</h1><div class="subtitle">Trabaja rectas, ángulos y sus tipos</div></header>
         <div class="start-content">
-            <div class="advice-box">En este juego aprenderás sobre <span class="highlight-keyword">rectas, semirrectas y segmentos</span>, tipos de rectas (<span class="highlight-keyword">secantes, paralelas y perpendiculares</span>), las <span class="highlight-keyword">partes de un ángulo</span>, tipos de ángulos y el uso del <span class="highlight-keyword">transportador</span>.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Buena suerte! 🎯</strong></div>
+            <div class="advice-box">En este juego aprenderás sobre <span class="highlight-keyword">rectas, semirrectas y segmentos</span>, tipos de rectas (<span class="highlight-keyword">secantes, paralelas y perpendiculares</span>), las <span class="highlight-keyword">partes de un ángulo</span>, tipos de ángulos y el uso del <span class="highlight-keyword">transportador</span>.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Buena suerte! </strong></div>
             <button class="btn btn-primary" id="startBtn">Comenzar</button>
             <img class="start-image" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png" alt="Niños aprendiendo">
         </div>
@@ -167,7 +177,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function formatTime(s){ const m = Math.floor(s/60); const sec = Math.floor(s%60); return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
     function showScreen(id){ document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
-    const MIN_INTERACTIONS = 26; let totalAttempts = 0;
+    const MIN_INTERACTIONS = 32; 
+    let totalAttempts = 0;
     function calcScore(){ const extra = Math.max(0, totalAttempts - MIN_INTERACTIONS); return Math.max(0, 100 - extra * 2); }
 
     function shuffle(arr){ const a = [...arr]; for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
@@ -238,19 +249,20 @@ document.addEventListener('DOMContentLoaded', function() {
         return `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">${arcPath}<line x1="${cx}" y1="${cy}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="#2563eb" stroke-width="3"/><line x1="${cx}" y1="${cy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#2563eb" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="4" fill="#2563eb"/></svg>`;
     }
     
+    // ✅ DE GLM: Corrección del transportador para que dibuje el ángulo objetivo
     function makeSVGTransportador(angleDeg){
         const cx = 200, cy = 210, R = 130, armLen = 150;
         let svg = [];
         svg.push(`<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" id="protSvg" style="touch-action: none;">`);
         
-        // Líneas base del ángulo
         svg.push(`<line x1="${cx}" y1="${cy}" x2="${cx+armLen}" y2="${cy}" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>`);
-        const tx2 = cx + armLen * Math.cos(-angleDeg * Math.PI / 180);
-        const ty2 = cy - armLen * Math.sin(-angleDeg * Math.PI / 180);
-        svg.push(`<line x1="${cx}" y1="${cy}" x2="${tx2.toFixed(1)}" y2="${ty2.toFixed(1)}" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>`);
+        
+        const targetRad = -angleDeg * Math.PI / 180;
+        const targetX = cx + armLen * Math.cos(targetRad);
+        const targetY = cy + armLen * Math.sin(targetRad);
+        svg.push(`<line x1="${cx}" y1="${cy}" x2="${targetX.toFixed(1)}" y2="${targetY.toFixed(1)}" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>`);
         svg.push(`<circle cx="${cx}" cy="${cy}" r="5" fill="#2563eb"/>`);
 
-        // Transportador
         svg.push(`<path d="M ${cx-R} ${cy} A ${R} ${R} 0 0 1 ${cx+R} ${cy} Z" fill="rgba(220,220,255,0.7)" stroke="#7c3aed" stroke-width="1.5"/>`);
         svg.push(`<line x1="${cx-R-10}" y1="${cy}" x2="${cx+R+10}" y2="${cy}" stroke="#333" stroke-width="0.5"/>`);
         
@@ -273,7 +285,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const game1Levels = [{type:'recta', variant:0},{type:'recta', variant:1},{type:'semirrecta', variant:0},{type:'semirrecta', variant:1},{type:'segmento', variant:0},{type:'segmento', variant:1}];
     const game2Levels = [{type:'paralelas', variant:0},{type:'paralelas', variant:1},{type:'perpendiculares', variant:0},{type:'perpendiculares', variant:1},{type:'secantes', variant:0},{type:'secantes', variant:1}];
     
-    // ✅ CORREGIDO: Añadida propiedad 'type' para que shuffleNoConsecutive funcione correctamente
     const game3Levels = [
         {angle:55, target:'lados', type:'lados'},
         {angle:120, target:'vertice', type:'vertice'},
@@ -283,7 +294,13 @@ document.addEventListener('DOMContentLoaded', function() {
         {angle:140, target:'abertura', type:'abertura'}
     ];
     
-    const game4Levels = [{angle:35, type:'agudo'},{angle:60, type:'agudo'}, {angle:90, type:'recto'},{angle:90, type:'recto'}, {angle:110, type:'obtuso'},{angle:135, type:'obtuso'}, {angle:180, type:'llano'},{angle:180, type:'llano'}, {angle:360, type:'completo'},{angle:360, type:'completo'}];
+    const game4Levels = [
+        {angle:25, type:'agudo'}, {angle:45, type:'agudo'}, 
+        {angle:90, type:'recto'}, {angle:90, type:'recto'}, 
+        {angle:135, type:'obtuso'}, {angle:155, type:'obtuso'}, 
+        {angle:180, type:'llano'}, {angle:180, type:'llano'}, 
+        {angle:360, type:'completo'}, {angle:360, type:'completo'}
+    ];
 
     let g1Levels, g1Index = 0, g1Locked = false;
     let g2Levels, g2Index = 0, g2Locked = false;
@@ -305,7 +322,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function startGame3(){ showScreen('game3Screen'); g3Levels = shuffleNoConsecutive(game3Levels); g3Index = 0; startTimer('timerGame3'); loadG3(); }
     function loadG3(){ if(g3Index>=g3Levels.length){stopTimer();startGame4();return;} const lv=g3Levels[g3Index]; g3Locked=false; document.getElementById('levelGame3').textContent=`Nivel ${g3Index+1}/6`; document.getElementById('progressFillGame3').style.width=`${(g3Index/6)*100}%`; document.getElementById('svgDisplay3').innerHTML=makeSVGAngulo3(lv.angle,lv.target); ['btnLadosP','btnVerticeP','btnAberturaP'].forEach(id=>{document.getElementById(id).classList.remove('correct-parte','wrong-parte');}); }
-    function answerG3(c){ if(g3Locked) return; playSound('tap'); totalAttempts++; const lv=g3Levels[g3Index]; if(c===lv.target){playSound('correct');g3Locked=true;document.getElementById({lados:'btnLadosP',vertice:'btnVerticeP',abertura:'btnAberturaP'}[c]).classList.add('correct-parte');setTimeout(()=>{g3Index++;document.getElementById('progressFillGame3').style.width=`${(g3Index/6)*100}%`;if(g3Index>=6){stopTimer();startGame4();}else loadG3();},900);} else {playSound('error');g3Locked=true;const btn=document.getElementById({lados:'btnLadosP',vertice:'btnVerticeP',abertura:'btnAberturaP'}[c]);btn.classList.add('wrong-parte');setTimeout(()=>{btn.classList.remove('wrong-parte');g3Locked=false;},700);}}
+    
+    function answerG3(c){ 
+        if(g3Locked) return; 
+        playSound('tap'); 
+        totalAttempts++; 
+        const lv=g3Levels[g3Index]; 
+        if(c===lv.target){
+            playSound('correct');
+            document.getElementById({lados:'btnLadosP',vertice:'btnVerticeP',abertura:'btnAberturaP'}[c]).classList.add('correct-parte');
+            g3Index++;
+            document.getElementById('progressFillGame3').style.width=`${(g3Index/6)*100}%`;
+            if(g3Index>=6){stopTimer();startGame4();}else loadG3();
+        } else {
+            playSound('error');
+            g3Locked=true;
+            const btn=document.getElementById({lados:'btnLadosP',vertice:'btnVerticeP',abertura:'btnAberturaP'}[c]);
+            btn.classList.add('wrong-parte');
+            setTimeout(()=>{btn.classList.remove('wrong-parte');g3Locked=false;},700);
+        }
+    }
     document.getElementById('btnLadosP').addEventListener('click', ()=>answerG3('lados')); document.getElementById('btnVerticeP').addEventListener('click', ()=>answerG3('vertice')); document.getElementById('btnAberturaP').addEventListener('click', ()=>answerG3('abertura'));
 
     function startGame4(){ showScreen('game4Screen'); g4Levels = shuffleNoConsecutive(game4Levels); g4Index = 0; startTimer('timerGame4'); loadG4(); }
@@ -313,44 +349,81 @@ document.addEventListener('DOMContentLoaded', function() {
     function answerG4(c){ if(g4Locked) return; playSound('tap'); totalAttempts++; const lv=g4Levels[g4Index]; if(c===lv.type){playSound('correct');g4Index++;document.getElementById('progressFillGame4').style.width=`${(g4Index/10)*100}%`;if(g4Index>=10){stopTimer();startGame5();}else loadG4();} else {playSound('error');g4Locked=true;const btn=document.getElementById({agudo:'btnAgudo4',recto:'btnRecto4',obtuso:'btnObtuso4',llano:'btnLlano4',completo:'btnCompleto4'}[c]);btn.classList.add('btn-answer-wrong');setTimeout(()=>{btn.classList.remove('btn-answer-wrong');g4Locked=false;},700);}}
     document.getElementById('btnAgudo4').addEventListener('click', ()=>answerG4('agudo')); document.getElementById('btnRecto4').addEventListener('click', ()=>answerG4('recto')); document.getElementById('btnObtuso4').addEventListener('click', ()=>answerG4('obtuso')); document.getElementById('btnLlano4').addEventListener('click', ()=>answerG4('llano')); document.getElementById('btnCompleto4').addEventListener('click', ()=>answerG4('completo'));
 
+    // ✅ DE GLM/QWEN: Evitar ángulos repetidos
     function startGame5(){
         showScreen('game5Screen'); g5Index = 0; startTimer('timerGame5');
         const degrees = [30, 40, 50, 60, 70, 80, 100, 110, 120, 130, 140, 150, 160];
-        g5Data = [
-            {angle: degrees[Math.floor(Math.random() * degrees.length)]},
-            {angle: degrees[Math.floor(Math.random() * degrees.length)]},
-            {angle: degrees[Math.floor(Math.random() * degrees.length)]},
-            {angle: degrees[Math.floor(Math.random() * degrees.length)]}
-        ];
+        const selectedDegrees = shuffle(degrees).slice(0, 4);
+        g5Data = selectedDegrees.map(d => ({angle: d}));
         loadG5();
     }
-    function loadG5(){ if(g5Index>=g5Data.length){stopTimer();finishGame();return;} const lv=g5Data[g5Index]; g5Locked=false; document.getElementById('levelGame5').textContent=`Nivel ${g5Index+1}/4`; document.getElementById('progressFillGame5').style.width=`${(g5Index/4)*100}%`; document.getElementById('svgDisplay5').innerHTML=makeSVGTransportador(lv.angle); currentAngleDeg=0; setTimeout(()=>{setupDrag();},0); }
+
+    // ✅ DE GLM: Pasar el ángulo para que se dibuje
+    function loadG5(){ 
+        if(g5Index>=g5Data.length){stopTimer();finishGame();return;} 
+        const lv=g5Data[g5Index]; 
+        g5Locked=false; 
+        document.getElementById('levelGame5').textContent=`Nivel ${g5Index+1}/4`; 
+        document.getElementById('progressFillGame5').style.width=`${(g5Index/4)*100}%`; 
+        document.getElementById('svgDisplay5').innerHTML=makeSVGTransportador(lv.angle); 
+        currentAngleDeg=0; 
+        setTimeout(()=>{setupDrag();},0); 
+    }
     function setupDrag(){ svgEl=document.getElementById('protSvg');redArm=document.getElementById('redArm');redHandle=document.getElementById('redHandle');angleCounter=document.getElementById('angleCounter'); if(!svgEl)return; svgPoint=svgEl.createSVGPoint(); redHandle.addEventListener('pointerdown',startDrag); svgEl.addEventListener('pointermove',drag); svgEl.addEventListener('pointerup',endDrag); svgEl.addEventListener('pointerleave',endDrag); }
     function getMouseSVGCoord(evt){svgPoint.x=evt.clientX;svgPoint.y=evt.clientY;return svgPoint.matrixTransform(svgEl.getScreenCTM().inverse());} 
     function startDrag(evt){isDragging=true;evt.target.setPointerCapture(evt.pointerId);} 
+    
     function drag(evt){
         if(!isDragging)return; 
         const pt=getMouseSVGCoord(evt); 
         const cx=200,cy=210,armLen=150; 
         const dx=pt.x-cx;const dy=pt.y-cy; 
-        let rad=Math.atan2(-dy,dx);
         
-        // ✅ CORREGIDO: Clamp correcto del ángulo a [0°, 180°]
+        let rad = Math.atan2(-dy, dx);
         let deg = rad * 180 / Math.PI;
         if (deg < 0) deg += 360;
         currentAngleDeg = Math.max(0, Math.min(180, Math.round(deg)));
         
-        rad = currentAngleDeg * Math.PI / 180; 
-        const ex=cx+armLen*Math.cos(rad);const ey=cy-armLen*Math.sin(rad); 
+        rad = currentAngleDeg * Math.PI / 180;
+        const ex = cx + armLen * Math.cos(rad);
+        const ey = cy - armLen * Math.sin(rad);
+        
         redArm.setAttribute('x2',ex.toFixed(1));redArm.setAttribute('y2',ey.toFixed(1)); 
         redHandle.setAttribute('cx',ex.toFixed(1));redHandle.setAttribute('cy',ey.toFixed(1)); 
         angleCounter.textContent=currentAngleDeg+'°';
     }
     function endDrag(){isDragging=false;}
 
-    document.getElementById('checkAngle5').addEventListener('click', function(){ if(g5Locked)return;playSound('tap');totalAttempts++; const lv=g5Data[g5Index]; if(Math.abs(currentAngleDeg-lv.angle)<=5){playSound('correct');g5Locked=true;angleCounter.classList.add('correct-text');setTimeout(()=>{g5Index++;document.getElementById('progressFillGame5').style.width=`${(g5Index/4)*100}%`;if(g5Index>=4){stopTimer();finishGame();}else loadG5();},900);} else {playSound('error');g5Locked=true;angleCounter.classList.add('wrong-text');setTimeout(()=>{angleCounter.classList.remove('wrong-text');g5Locked=false;},700);}});
+    // ✅ DE GLM: Feedback visual mostrando la respuesta correcta al fallar
+    document.getElementById('checkAngle5').addEventListener('click', function(){ 
+        if(g5Locked)return;
+        playSound('tap');
+        totalAttempts++; 
+        const lv=g5Data[g5Index]; 
 
-    function finishGame(){ stopTimer();const score=calcScore(); document.getElementById('finalScore').textContent=score; document.getElementById('finalTime').textContent=formatTime(elapsed); document.getElementById('finalAttempts').textContent=totalAttempts; const trophyBox=document.getElementById('trophyBox');const msg=document.getElementById('finalMsg'); if(score===100){trophyBox.style.display='block';msg.textContent='¡Genial! ¡Puntuación perfecta! 🎉';playSound('victory');createConfetti();} else if(score>=80){trophyBox.style.display='none';msg.textContent='¡Casi perfecto! Sigue practicando.';playSound('completed');} else if(score>=50){trophyBox.style.display='none';msg.textContent='No está mal, pero puedes mejorar.';playSound('completed');} else {trophyBox.style.display='none';msg.textContent='Vaya... ¿Has repasado el tema? 📚';playSound('completed');} showScreen('finalScreen'); }
+        if(Math.abs(currentAngleDeg-lv.angle)<=5){
+            playSound('correct');
+            g5Locked=true;
+            angleCounter.classList.add('correct-text');
+            setTimeout(()=>{
+                g5Index++;
+                document.getElementById('progressFillGame5').style.width=`${(g5Index/4)*100}%`;
+                if(g5Index>=4){stopTimer();finishGame();}else loadG5();
+            },900);
+        } else {
+            playSound('error');
+            g5Locked=true;
+            angleCounter.classList.add('wrong-text');
+            angleCounter.textContent = `✗ ${currentAngleDeg}° (Era: ${lv.angle}°)`;
+            setTimeout(()=>{
+                angleCounter.classList.remove('wrong-text');
+                angleCounter.textContent = currentAngleDeg + '°';
+                g5Locked=false;
+            },1500);
+        }
+    });
+
+    function finishGame(){ stopTimer();const score=calcScore(); document.getElementById('finalScore').textContent=score; document.getElementById('finalTime').textContent=formatTime(elapsed); document.getElementById('finalAttempts').textContent=totalAttempts; const trophyBox=document.getElementById('trophyBox');const msg=document.getElementById('finalMsg'); if(score===100){trophyBox.style.display='block';msg.textContent='¡Genial! ¡Puntuación perfecta! ';playSound('victory');createConfetti();} else if(score>=80){trophyBox.style.display='none';msg.textContent='¡Casi perfecto! Sigue practicando.';playSound('completed');} else if(score>=50){trophyBox.style.display='none';msg.textContent='No está mal, pero puedes mejorar.';playSound('completed');} else {trophyBox.style.display='none';msg.textContent='Vaya... ¿Has repasado el tema? 📚';playSound('completed');} showScreen('finalScreen'); }
     function createConfetti(){ for(let i=0;i<100;i++){setTimeout(()=>{const c=document.createElement('div');c.className='confetti';const x=Math.random()*window.innerWidth;const tx=(Math.random()-.5)*200;c.style.left=x+'px';c.style.top='-10px';c.style.backgroundColor=['#ff595e','#1982c4','#6a4c93','#ffca3a','#8ac926'][Math.floor(Math.random()*5)];c.style.setProperty('--tx',tx+'px');c.style.setProperty('--ty',window.innerHeight+20+'px');document.body.appendChild(c);setTimeout(()=>c.remove(),3000);},i*20);} }
 
     document.getElementById('startBtn').addEventListener('click', function(){ playSound('tap');totalAttempts=0;elapsed=0;startGame1(); });
