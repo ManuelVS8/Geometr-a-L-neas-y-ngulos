@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="google" content="notranslate">
+    <title>Geometría: Líneas y Ángulos</title>
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/icono.ico">
+    <style>
+        * { box-sizing: border-box; margin:0; padding:0; }
+        :root{
+            --blue:#001DFF; --blue-dark:#04032B; --blue-700:#1a3a5f; --blue-600:#254fba;
+            --orange:#f59e42; --orange-700:#e67e22; --bg-grad-1:#1a3a5f; --bg-grad-2:#0d2340;
+            --white:#ffffff; --green:#2ecc71; --red:#e74c3c; --panel:#E8EAFF;
+        }
+        body{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%); min-height:100vh; display:flex; justify-content:center; align-items: flex-start; padding: 20px 12px; color:#333; }
+        .game-container{ background:var(--white); border-radius:16px; box-shadow:0 12px 24px rgba(0,0,0,.12); padding:1.2rem; max-width:980px; width:100%; min-height:640px; position:relative; overflow:hidden; display:flex; flex-direction:column; margin-bottom: 2rem; }
+        header{ text-align:center; margin-bottom:.8rem; margin-top:3.2rem; }
+        h1{ color:var(--blue-dark); font-size:clamp(1.6rem,4.5vw,2.6rem); font-weight:900; letter-spacing:.5px; }
+        .subtitle{ color:var(--blue-700); font-size:clamp(0.95rem,3vw,1.15rem); margin-top:.25rem; }
+        .highlight-keyword{ color:var(--orange); font-weight:800; }
+
+        .btn{ color:#fff; border:none; padding:.75rem 1.2rem; border-radius:10px; cursor:pointer; font-weight:800; transition:transform .08s ease, box-shadow .2s ease; min-width:120px; height:48px; display:inline-flex; align-items:center; justify-content:center; font-size: 1rem; }
+        .btn:hover{ transform:translateY(-2px); box-shadow:0 6px 14px rgba(0,0,0,.12); }
+        .btn:active{ transform:translateY(0); }
+        .btn-primary{ background:var(--orange); } .btn-primary:hover{ background:var(--orange-700); }
+
+        .screen{ display:none; animation:fadeIn .35s ease; flex-direction:column; flex:1; }
+        .screen.active{ display:flex; }
+        @keyframes fadeIn{ from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:translateY(0);} }
+
+        .game-info{ display:flex; gap:.6rem; align-items:center; justify-content:space-between; margin:.4rem 0 .6rem; flex-wrap:wrap; }
+        .timer{ font-weight:900; color:var(--blue-700); font-size:clamp(.95rem,2.3vw,1.15rem); }
+        .progress-bar{ flex:1; height:10px; background:#e6f2ff; border-radius:999px; overflow:hidden; }
+        .progress-fill{ height:100%; width:0%; background:linear-gradient(90deg, var(--orange) 0%, var(--orange-700) 100%); transition:width .3s ease; }
+        .level-indicator{ font-weight:700; color: var(--blue-700); font-size: 0.9rem; background: #e6f2ff; padding: 4px 10px; border-radius: 20px; }
+
+        .top-controls{ position: absolute; top: .8rem; right: 1rem; display: flex; align-items: center; gap: 8px; z-index: 20; }
+        .mute-btn{ background:linear-gradient(135deg, var(--orange), var(--orange-700)); color:#fff; border:2px solid #fff; width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; z-index:20; transition: transform .2s; }
+        .mute-btn:hover{ transform:scale(1.1); }
+        .mute-btn.muted{ background:linear-gradient(135deg, #999, #777); }
+        .mute-btn svg{ width:20px; height:20px; pointer-events:none; }
+
+        .start-content{ display:flex; flex-direction:column; justify-content:center; align-items:center; flex:1; gap:1rem; padding:1rem; }
+        .advice-box{ background:var(--panel); border-left:4px solid var(--blue-700); padding:1rem 1.2rem; border-radius:12px; color:var(--blue-700); max-width:760px; text-align:center; font-size:clamp(1rem,3vw,1.1rem); line-height:1.7; }
+        .start-image{ max-width: 220px; width: 100%; margin: 0 auto; }
+
+        .svg-game-wrapper{ display:flex; flex-direction:column; align-items:center; gap:.8rem; width:100%; flex:1; justify-content:flex-start; }
+        .svg-display{ background:#f0f4ff; border-radius:16px; border:2px solid #d0d8f0; width:100%; max-width:580px; display:flex; align-items:center; justify-content:center; min-height:220px; padding:.5rem; overflow: hidden; }
+        .svg-display svg{ width:100%; height:auto; max-height:220px; }
+        .answer-buttons{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; width:100%; max-width:580px; }
+        .answer-buttons .btn{ flex:1; min-width:90px; max-width:200px; height:auto; min-height:56px; padding:.7rem .8rem; border-radius:14px; font-size:clamp(.85rem,2.2vw,1.05rem); flex-direction:column; gap:.2rem; }
+        
+        .btn-recta{ background:#5b7ff5; } .btn-semirrecta{ background:#e05c9a; } .btn-segmento{ background:#2eaab5; } 
+        .btn-secantes{ background:#9b59b6; } .btn-paralelas{ background:#27ae60; } .btn-perpendiculares{ background:#e67e22; } 
+        .btn-agudo{ background:#e91e63; } .btn-recto{ background:#3f51b5; } .btn-obtuso{ background:#ff5722; } 
+        .btn-llano{ background:#607d8b; } .btn-completo{ background:#795548; } 
+
+        .btn-answer-correct{ background:var(--green) !important; }
+        .btn-answer-wrong{ background:var(--red) !important; animation: shake .3s ease-in-out; }
+        @keyframes shake { 0%{transform:translateX(0);} 20%{transform:translateX(-5px);} 40%{transform:translateX(5px);} 60%{transform:translateX(-5px);} 80%{transform:translateX(5px);} 100%{transform:translateX(0);} }
+
+        .partes-wrapper{ display:flex; flex-direction:column; align-items:center; gap:.8rem; width:100%; flex:1; }
+        .partes-svg-area{ background:#f0f4ff; border-radius:16px; border:2px solid #d0d8f0; width:100%; max-width:580px; display:flex; align-items:center; justify-content:center; min-height:220px; padding:.5rem; position:relative; overflow:hidden; }
+        .partes-svg-area svg{ width:100%; height:auto; max-height:240px; }
+        .partes-buttons{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; width:100%; max-width:580px; }
+        .partes-buttons .btn{ flex:1; min-width:120px; max-width:180px; height:auto; min-height:52px; padding:.65rem .8rem; border-radius:14px; font-size:clamp(.85rem,2vw,1rem); }
+        .parte-btn{ background:#8e44ad; } .parte-btn.correct-parte{ background:var(--green); } .parte-btn.wrong-parte{ background:var(--red); animation: shake .3s; }
+
+        .protractor-wrapper{ display:flex; flex-direction:column; align-items:center; gap:.8rem; width:100%; flex:1; }
+        .protractor-area{ background:#f0f4ff; border-radius:16px; border:2px solid #d0d8f0; width:100%; max-width:600px; display:flex; align-items:center; justify-content:center; min-height:280px; padding:.5rem; overflow:hidden; position:relative; touch-action: none; }
+        .protractor-area svg{ width:100%; height:auto; max-height:300px; }
+        .check-protractor-btn { margin-top: 0.3rem; min-width: 180px; }
+        .correct-text { fill: var(--green) !important; color: var(--green); }
+        .wrong-text { fill: var(--red) !important; color: var(--red); animation: shake .3s; }
+
+        .results{ display:flex; flex-direction:column; align-items:center; gap:.6rem; text-align:center; flex:1; justify-content:center;}
+        .final-title{ color:var(--blue-dark); font-weight:900; }
+        .big-score{ font-size:clamp(2.2rem,6vw,3.4rem); color:var(--blue-600); font-weight:900; }
+        .score-title{ font-size:1.0rem; color:var(--blue-700); margin-top:1rem; }
+        .final-time{ color:var(--blue-700); }
+        .final-attempts{ color:var(--blue-700); font-size:1rem; margin-top:.2rem; }
+        #trophyBox { display: none; font-size: clamp(4rem, 10vw, 7rem); margin: .5rem 0; text-align: center; align-self: center; animation: bounce 1s ease infinite; color: var(--orange); line-height: 1; }
+        @keyframes bounce { 0%,100%{ transform: translateY(0) scale(1); } 50%{ transform: translateY(-15px) scale(1.1); } }
+        .credit{ color:var(--blue-700); margin-top:1rem; font-size:.9rem; }
+        #finalMsg { font-size: clamp(1.1rem, 3.5vw, 1.6rem); font-weight: 800; color: var(--blue-700); margin-top: 0.6rem; }
+        .school-logo { display: block; width: 160px; max-width: 28%; height: auto; margin-top: 0.8rem; border-radius: 8px; object-fit: contain; }
+        .confetti{ position:fixed; width:10px; height:10px; border-radius:50%; animation: confetti-fall 3s linear forwards; z-index:999; }
+        @keyframes confetti-fall{ 0%{ transform:translate(0, -20px) rotate(0); opacity:1;} 100%{ transform:translate(var(--tx), var(--ty)) rotate(360deg); opacity:0; } }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="top-controls">
+        <button class="mute-btn" id="muteBtn" title="Silenciar/Activar sonido">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        </button>
+    </div>
+
+    <section class="screen active" id="startScreen">
+        <header><h1>📐 Geometría: Líneas y Ángulos</h1><div class="subtitle">Trabaja rectas, ángulos y sus tipos</div></header>
+        <div class="start-content">
+            <div class="advice-box">En este juego aprenderás sobre <span class="highlight-keyword">rectas, semirrectas y segmentos</span>, tipos de rectas (<span class="highlight-keyword">secantes, paralelas y perpendiculares</span>), las <span class="highlight-keyword">partes de un ángulo</span>, tipos de ángulos y el uso del <span class="highlight-keyword">transportador</span>.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Buena suerte! 🎯</strong></div>
+            <button class="btn btn-primary" id="startBtn">Comenzar</button>
+            <img class="start-image" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png" alt="Niños aprendiendo">
+        </div>
+    </section>
+
+    <section class="screen" id="game1Screen">
+        <header><h1>📏 Rectas, semirrectas y segmentos</h1><div class="subtitle">¿Qué tipo de línea es esta?</div></header>
+        <div class="game-info"><div class="timer" id="timerGame1">00:00</div><div class="progress-bar"><div class="progress-fill" id="progressFillGame1"></div></div><div class="level-indicator" id="levelGame1">Nivel 1/6</div></div>
+        <div class="svg-game-wrapper"><div class="svg-display" id="svgDisplay1"></div><div class="answer-buttons"><button class="btn btn-recta" id="btnRecta1">Recta</button><button class="btn btn-semirrecta" id="btnSemirrecta1">Semirrecta</button><button class="btn btn-segmento" id="btnSegmento1">Segmento</button></div></div>
+    </section>
+
+    <section class="screen" id="game2Screen">
+        <header><h1>↔️ Secantes, paralelas y perpendiculares</h1><div class="subtitle">¿Cómo son estas rectas entre sí?</div></header>
+        <div class="game-info"><div class="timer" id="timerGame2">00:00</div><div class="progress-bar"><div class="progress-fill" id="progressFillGame2"></div></div><div class="level-indicator" id="levelGame2">Nivel 1/6</div></div>
+        <div class="svg-game-wrapper"><div class="svg-display" id="svgDisplay2"></div><div class="answer-buttons"><button class="btn btn-secantes" id="btnSecantes2">Secantes</button><button class="btn btn-paralelas" id="btnParalelas2">Paralelas</button><button class="btn btn-perpendiculares" id="btnPerpendiculares2">Perpendiculares</button></div></div>
+    </section>
+
+    <section class="screen" id="game3Screen">
+        <header><h1>🔺 Partes de un ángulo</h1><div class="subtitle">Identifica el elemento destacado en rojo</div></header>
+        <div class="game-info"><div class="timer" id="timerGame3">00:00</div><div class="progress-bar"><div class="progress-fill" id="progressFillGame3"></div></div><div class="level-indicator" id="levelGame3">Nivel 1/6</div></div>
+        <div class="partes-wrapper"><div class="partes-svg-area" id="svgDisplay3"></div><div class="partes-buttons"><button class="btn parte-btn" id="btnLadosP">Lados</button><button class="btn parte-btn" id="btnVerticeP">Vértice</button><button class="btn parte-btn" id="btnAberturaP">Abertura / Amplitud</button></div></div>
+    </section>
+
+    <section class="screen" id="game4Screen">
+        <header><h1>📐 Tipos de ángulos</h1><div class="subtitle">¿Qué tipo de ángulo es este?</div></header>
+        <div class="game-info"><div class="timer" id="timerGame4">00:00</div><div class="progress-bar"><div class="progress-fill" id="progressFillGame4"></div></div><div class="level-indicator" id="levelGame4">Nivel 1/10</div></div>
+        <div class="svg-game-wrapper"><div class="svg-display" id="svgDisplay4"></div><div class="answer-buttons"><button class="btn btn-agudo" id="btnAgudo4">Agudo</button><button class="btn btn-recto" id="btnRecto4">Recto</button><button class="btn btn-obtuso" id="btnObtuso4">Obtuso</button><button class="btn btn-llano" id="btnLlano4">Llano</button><button class="btn btn-completo" id="btnCompleto4">Completo</button></div></div>
+    </section>
+
+    <section class="screen" id="game5Screen">
+        <header><h1>🔭 Transportador de ángulos</h1><div class="subtitle">Arrastra la flecha roja para medir el ángulo</div></header>
+        <div class="game-info"><div class="timer" id="timerGame5">00:00</div><div class="progress-bar"><div class="progress-fill" id="progressFillGame5"></div></div><div class="level-indicator" id="levelGame5">Nivel 1/4</div></div>
+        <div class="protractor-wrapper"><div class="protractor-area" id="svgDisplay5"></div><button class="btn btn-primary check-protractor-btn" id="checkAngle5">Comprobar ángulo</button></div>
+    </section>
+
+    <section class="screen" id="finalScreen">
+        <header><h1 class="final-title">📐 Geometría: Líneas y Ángulos</h1></header>
+        <div class="results">
+            <div id="trophyBox">🏆</div><div class="score-title">Puntuación:</div><div class="big-score" id="finalScore">0</div>
+            <div class="final-time">Tiempo: <span id="finalTime">00:00</span></div><div class="final-attempts">Intentos totales: <span id="finalAttempts">0</span></div>
+            <div id="finalMsg" class="subtitle"></div><button class="btn btn-primary" id="backToMenuBtn">Volver al menú</button>
+            <span class="credit">Creado por Manuel J. Ventura</span><img class="school-logo" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Siurot.png" alt="Logo del colegio" />
+        </div>
+    </section>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    let isMuted = false;
+    const audioUrls = { correct: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Correcto.mp3', error: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Error.mp3', tap: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Tap.mp3', victory: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Termin%C3%A9.mp3', completed:'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Completado.mp3' };
+    const audioObjects = {};
+    Object.keys(audioUrls).forEach(k => { try { const a = new Audio(); a.src = audioUrls[k]; a.preload = 'auto'; audioObjects[k] = a; } catch(e) {} });
+    function playSound(k){ if(isMuted) return; const a = audioObjects[k]; if(!a) return; try{ a.currentTime=0; a.play(); }catch(e){} }
+    
+    document.getElementById('muteBtn').addEventListener('click', function(){
+        isMuted = !isMuted; const btn = document.getElementById('muteBtn'); btn.classList.toggle('muted', isMuted);
+        btn.innerHTML = isMuted ? `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
+    });
+
+    let startTime = 0, timerInterval = null, elapsed = 0, currentTimerId = 'timerGame1';
+    function startTimer(id){ currentTimerId = id; if(!timerInterval) { startTime = Date.now() - elapsed * 1000; timerInterval = setInterval(() => { elapsed = (Date.now() - startTime) / 1000; document.getElementById(currentTimerId).textContent = formatTime(elapsed); }, 500); } }
+    function stopTimer(){ clearInterval(timerInterval); timerInterval = null; }
+    function formatTime(s){ const m = Math.floor(s/60); const sec = Math.floor(s%60); return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
+    function showScreen(id){ document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+
+    const MIN_INTERACTIONS = 26; let totalAttempts = 0;
+    function calcScore(){ const extra = Math.max(0, totalAttempts - MIN_INTERACTIONS); return Math.max(0, 100 - extra * 2); }
+
+    function shuffle(arr){ const a = [...arr]; for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+    function shuffleNoConsecutive(arr) {
+        let a = shuffle(arr);
+        let hasConsecutive = true;
+        let attempts = 0;
+        while (hasConsecutive && attempts < 100) {
+            hasConsecutive = false;
+            for (let i = 1; i < a.length; i++) {
+                if (a[i].type === a[i-1].type) {
+                    hasConsecutive = true;
+                    let swapIndex = -1;
+                    for (let j = i + 1; j < a.length; j++) { if (a[j].type !== a[i-1].type) { swapIndex = j; break; } }
+                    if (swapIndex !== -1) { [a[i], a[swapIndex]] = [a[swapIndex], a[i]]; } else {
+                        for (let j = i - 2; j >= 0; j--) { if (a[j].type !== a[i].type) { swapIndex = j; break; } }
+                        if(swapIndex !== -1) [a[i], a[swapIndex]] = [a[swapIndex], a[i]]; else a = shuffle(a);
+                    }
+                    break; 
+                }
+            }
+            attempts++;
+        }
+        return a;
+    }
+
+    function makeSVGRecta(v){ const c = ['#2563eb','#dc2626','#7c3aed','#0891b2'][v % 4]; const angle = [0, 15, -15, 8][v % 4]; const cx = 200, cy = 125; const rad = angle * Math.PI / 180; const dx = Math.cos(rad) * 110, dy = Math.sin(rad) * 110; return `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar1" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="${c}"/></marker><marker id="al1" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto-start-reverse"><path d="M0,0 L8,3 L0,6 Z" fill="${c}"/></marker></defs><line x1="${cx - dx}" y1="${cy - dy}" x2="${cx + dx}" y2="${cy + dy}" stroke="${c}" stroke-width="3" marker-end="url(#ar1)" marker-start="url(#al1)"/><text x="200" y="235" text-anchor="middle" font-family="Segoe UI" font-size="14" fill="#555">¿Qué tipo de línea es esta?</text></svg>`; }
+    function makeSVGSemirrecta(v){ const c = ['#059669','#b45309','#1d4ed8','#be185d'][v % 4]; const angle = [0, 20, -20, 10][v % 4]; const rad = angle * Math.PI / 180; const ox = 70, oy = 140; const ex = ox + Math.cos(rad) * 220, ey = oy + Math.sin(rad) * 220; return `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar2${v}" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="${c}"/></marker></defs><line x1="${ox}" y1="${oy}" x2="${ex}" y2="${ey}" stroke="${c}" stroke-width="3" marker-end="url(#ar2${v})"/><circle cx="${ox}" cy="${oy}" r="5" fill="${c}"/><text x="200" y="235" text-anchor="middle" font-family="Segoe UI" font-size="14" fill="#555">¿Qué tipo de línea es esta?</text></svg>`; }
+    function makeSVGSegmento(v){ const c = ['#7c3aed','#0891b2','#dc2626','#047857'][v % 4]; const [x1,y1,x2,y2] = [[70,120,330,120],[80,150,320,100],[80,80,320,150],[70,120,300,130]][v % 4]; return `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="3"/><circle cx="${x1}" cy="${y1}" r="5" fill="${c}"/><circle cx="${x2}" cy="${y2}" r="5" fill="${c}"/><text x="200" y="235" text-anchor="middle" font-family="Segoe UI" font-size="14" fill="#555">¿Qué tipo de línea es esta?</text></svg>`; }
+    function makeSVGParalelas(v){ const [[ax1,ay1,ax2,ay2],[bx1,by1,bx2,by2]] = [[[70,90,330,90],[70,160,330,160]],[[70,80,330,100],[70,150,330,170]]][v % 2]; const [c1,c2] = [['#2563eb','#dc2626'],['#7c3aed','#059669']][v % 2]; return `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg"><defs><marker id="pa${v}a" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="${c1}"/></marker><marker id="pa${v}b" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="${c2}"/></marker><marker id="pa${v}ar" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto-start-reverse"><path d="M0,0 L8,3 L0,6 Z" fill="${c1}"/></marker><marker id="pa${v}br" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto-start-reverse"><path d="M0,0 L8,3 L0,6 Z" fill="${c2}"/></marker></defs><line x1="${ax1}" y1="${ay1}" x2="${ax2}" y2="${ay2}" stroke="${c1}" stroke-width="3" marker-end="url(#pa${v}a)" marker-start="url(#pa${v}ar)"/><line x1="${bx1}" y1="${by1}" x2="${bx2}" y2="${by2}" stroke="${c2}" stroke-width="3" marker-end="url(#pa${v}b)" marker-start="url(#pa${v}br)"/><text x="200" y="235" text-anchor="middle" font-family="Segoe UI" font-size="14" fill="#555">¿Cómo son estas rectas?</text></svg>`; }
+    function makeSVGPerpendiculares(v){ const [cx,cy] = [[200,125],[180,125]][v % 2]; const [c1,c2] = [['#2563eb','#dc2626'],['#7c3aed','#059669']][v % 2]; const cosR = Math.cos(0), sinR = Math.sin(0); const len = 90; const r2 = Math.PI/2; const c2r = Math.cos(r2), s2r = Math.sin(r2); return `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg"><defs><marker id="pp${v}1e" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="${c1}"/></marker><marker id="pp${v}1s" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto-start-reverse"><path d="M0,0 L8,3 L0,6 Z" fill="${c1}"/></marker><marker id="pp${v}2e" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="${c2}"/></marker><marker id="pp${v}2s" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto-start-reverse"><path d="M0,0 L8,3 L0,6 Z" fill="${c2}"/></marker></defs><line x1="${cx - len*cosR}" y1="${cy - len*sinR}" x2="${cx + len*cosR}" y2="${cy + len*sinR}" stroke="${c1}" stroke-width="3" marker-end="url(#pp${v}1e)" marker-start="url(#pp${v}1s)"/><line x1="${cx - len*c2r}" y1="${cy - len*s2r}" x2="${cx + len*c2r}" y2="${cy + len*s2r}" stroke="${c2}" stroke-width="3" marker-end="url(#pp${v}2e)" marker-start="url(#pp${v}2s)"/><text x="200" y="235" text-anchor="middle" font-family="Segoe UI" font-size="14" fill="#555">¿Cómo son estas rectas?</text></svg>`; }
+    function makeSVGSecantes(v){ const cfg = [{a1:[50,180,350,70], b1:[50,70,350,160]},{a1:[50,100,350,160], b1:[70,190,290,50]}][v % 2]; const [c1,c2] = [['#7c3aed','#b45309'],['#be185d','#2563eb']][v % 2]; return `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg"><defs><marker id="sc${v}1e" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="${c1}"/></marker><marker id="sc${v}1s" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto-start-reverse"><path d="M0,0 L8,3 L0,6 Z" fill="${c1}"/></marker><marker id="sc${v}2e" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="${c2}"/></marker><marker id="sc${v}2s" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto-start-reverse"><path d="M0,0 L8,3 L0,6 Z" fill="${c2}"/></marker></defs><line x1="${cfg.a1[0]}" y1="${cfg.a1[1]}" x2="${cfg.a1[2]}" y2="${cfg.a1[3]}" stroke="${c1}" stroke-width="3" marker-end="url(#sc${v}1e)" marker-start="url(#sc${v}1s)"/><line x1="${cfg.b1[0]}" y1="${cfg.b1[1]}" x2="${cfg.b1[2]}" y2="${cfg.b1[3]}" stroke="${c2}" stroke-width="3" marker-end="url(#sc${v}2e)" marker-start="url(#sc${v}2s)"/><text x="200" y="235" text-anchor="middle" font-family="Segoe UI" font-size="14" fill="#555">¿Cómo son estas rectas?</text></svg>`; }
+    
+    function makeSVGAngulo3(angleDeg, target){
+        const cx = 200, cy = 150, len = 110, arcR = 40;
+        const r2 = angleDeg * Math.PI / 180; 
+        const x1 = cx + len, y1 = cy; 
+        const x2 = cx + Math.cos(r2)*len, y2 = cy - Math.sin(r2)*len;
+        const ax1 = cx + arcR, ay1 = cy;
+        const ax2 = cx + Math.cos(r2)*arcR, ay2 = cy - Math.sin(r2)*arcR;
+        const largeArc = angleDeg > 180 ? 1 : 0;
+        const ladoColor = target === 'lados' ? '#e91e63' : '#2563eb';
+        const verticeColor = target === 'vertice' ? '#e91e63' : '#333';
+        const arcColor = target === 'abertura' ? '#e91e63' : '#aaa';
+        const arcWidth = target === 'abertura' ? 3 : 1.5;
+        const arcDash = target === 'abertura' ? '' : '4,3';
+        return `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg"><path d="M ${ax1.toFixed(1)} ${ay1.toFixed(1)} A ${arcR} ${arcR} 0 ${largeArc} 0 ${ax2.toFixed(1)} ${ay2.toFixed(1)}" fill="none" stroke="${arcColor}" stroke-width="${arcWidth}" stroke-dasharray="${arcDash}"/><line x1="${cx}" y1="${cy}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="${ladoColor}" stroke-width="${target === 'lados' ? 4 : 3}"/><line x1="${cx}" y1="${cy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${ladoColor}" stroke-width="${target === 'lados' ? 4 : 3}"/><circle cx="${cx}" cy="${cy}" r="${target === 'vertice' ? 8 : 5}" fill="${verticeColor}"/></svg>`;
+    }
+
+    function makeSVGAnguloTipo(angleDeg, baseAngle){
+        const cx = 200, cy = 150, len = 110, arcR = 40;
+        const r1 = baseAngle * Math.PI / 180;
+        const r2 = r1 + angleDeg * Math.PI / 180; 
+        const x1 = cx + Math.cos(r1)*len, y1 = cy - Math.sin(r1)*len;
+        const x2 = cx + Math.cos(r2)*len, y2 = cy - Math.sin(r2)*len;
+        const ax1 = cx + Math.cos(r1)*arcR, ay1 = cy - Math.sin(r1)*arcR;
+        const ax2 = cx + Math.cos(r2)*arcR, ay2 = cy - Math.sin(r2)*arcR;
+        const largeArc = angleDeg > 180 ? 1 : 0;
+        
+        let arcPath = '';
+        if(angleDeg === 360){ 
+            arcPath = `<circle cx="${cx}" cy="${cy}" r="${arcR}" fill="none" stroke="#e91e63" stroke-width="2"/>`;
+        } else {
+            arcPath = `<path d="M ${ax1.toFixed(1)} ${ay1.toFixed(1)} A ${arcR} ${arcR} 0 ${largeArc} 0 ${ax2.toFixed(1)} ${ay2.toFixed(1)}" fill="none" stroke="#e91e63" stroke-width="2"/>`;
+        }
+
+        return `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">${arcPath}<line x1="${cx}" y1="${cy}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="#2563eb" stroke-width="3"/><line x1="${cx}" y1="${cy}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#2563eb" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="4" fill="#2563eb"/></svg>`;
+    }
+    
+    function makeSVGTransportador(angleDeg){
+        const cx = 200, cy = 210, R = 130, armLen = 150;
+        let svg = [];
+        svg.push(`<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" id="protSvg" style="touch-action: none;">`);
+        
+        // Líneas base del ángulo
+        svg.push(`<line x1="${cx}" y1="${cy}" x2="${cx+armLen}" y2="${cy}" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>`);
+        const tx2 = cx + armLen * Math.cos(-angleDeg * Math.PI / 180);
+        const ty2 = cy - armLen * Math.sin(-angleDeg * Math.PI / 180);
+        svg.push(`<line x1="${cx}" y1="${cy}" x2="${tx2.toFixed(1)}" y2="${ty2.toFixed(1)}" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>`);
+        svg.push(`<circle cx="${cx}" cy="${cy}" r="5" fill="#2563eb"/>`);
+
+        // Transportador
+        svg.push(`<path d="M ${cx-R} ${cy} A ${R} ${R} 0 0 1 ${cx+R} ${cy} Z" fill="rgba(220,220,255,0.7)" stroke="#7c3aed" stroke-width="1.5"/>`);
+        svg.push(`<line x1="${cx-R-10}" y1="${cy}" x2="${cx+R+10}" y2="${cy}" stroke="#333" stroke-width="0.5"/>`);
+        
+        for(let d = 0; d <= 180; d += 10){
+            const rad = -d * Math.PI/180; 
+            const innerR = d%30===0 ? R-15 : R-8;
+            const lx = cx + Math.cos(rad)*R, ly = cy + Math.sin(rad)*R;
+            const ix = cx + Math.cos(rad)*innerR, iy = cy + Math.sin(rad)*innerR;
+            svg.push(`<line x1="${lx.toFixed(1)}" y1="${ly.toFixed(1)}" x2="${ix.toFixed(1)}" y2="${iy.toFixed(1)}" stroke="#333" stroke-width="${d%30===0?1.2:0.6}"/>`);
+            if(d%30===0){ const lbR = R-25; const lbx = cx + Math.cos(rad)*lbR, lby = cy + Math.sin(rad)*lbR; svg.push(`<text x="${lbx.toFixed(1)}" y="${(lby+4).toFixed(1)}" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="#333">${d}</text>`); }
+        }
+        
+        svg.push(`<line id="redArm" x1="${cx}" y1="${cy}" x2="${cx+armLen}" y2="${cy}" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>`);
+        svg.push(`<circle id="redHandle" cx="${cx+armLen}" cy="${cy}" r="15" fill="rgba(220, 38, 38, 0.5)" cursor="pointer"/>`);
+        svg.push(`<text id="angleCounter" x="${cx}" y="${cy+40}" text-anchor="middle" font-family="Segoe UI" font-size="22" font-weight="700" fill="#dc2626">0°</text>`);
+        svg.push(`</svg>`);
+        return svg.join('');
+    }
+
+    const game1Levels = [{type:'recta', variant:0},{type:'recta', variant:1},{type:'semirrecta', variant:0},{type:'semirrecta', variant:1},{type:'segmento', variant:0},{type:'segmento', variant:1}];
+    const game2Levels = [{type:'paralelas', variant:0},{type:'paralelas', variant:1},{type:'perpendiculares', variant:0},{type:'perpendiculares', variant:1},{type:'secantes', variant:0},{type:'secantes', variant:1}];
+    
+    // ✅ CORREGIDO: Añadida propiedad 'type' para que shuffleNoConsecutive funcione correctamente
+    const game3Levels = [
+        {angle:55, target:'lados', type:'lados'},
+        {angle:120, target:'vertice', type:'vertice'},
+        {angle:85, target:'abertura', type:'abertura'},
+        {angle:45, target:'lados', type:'lados'},
+        {angle:95, target:'vertice', type:'vertice'},
+        {angle:140, target:'abertura', type:'abertura'}
+    ];
+    
+    const game4Levels = [{angle:35, type:'agudo'},{angle:60, type:'agudo'}, {angle:90, type:'recto'},{angle:90, type:'recto'}, {angle:110, type:'obtuso'},{angle:135, type:'obtuso'}, {angle:180, type:'llano'},{angle:180, type:'llano'}, {angle:360, type:'completo'},{angle:360, type:'completo'}];
+
+    let g1Levels, g1Index = 0, g1Locked = false;
+    let g2Levels, g2Index = 0, g2Locked = false;
+    let g3Levels, g3Index = 0, g3Locked = false;
+    let g4Levels, g4Index = 0, g4Locked = false;
+    let g5Index = 0, g5Locked = false;
+    let isDragging = false, currentAngleDeg = 0, svgEl, redArm, redHandle, angleCounter, svgPoint;
+    let g5Data = [];
+
+    function startGame1(){ showScreen('game1Screen'); g1Levels = shuffleNoConsecutive(game1Levels); g1Index = 0; startTimer('timerGame1'); loadG1(); }
+    function loadG1(){ if(g1Index>=g1Levels.length){stopTimer();startGame2();return;} const lv=g1Levels[g1Index]; document.getElementById('levelGame1').textContent=`Nivel ${g1Index+1}/6`; document.getElementById('progressFillGame1').style.width=`${(g1Index/6)*100}%`; document.getElementById('svgDisplay1').innerHTML=lv.type==='recta'?makeSVGRecta(lv.variant):lv.type==='semirrecta'?makeSVGSemirrecta(lv.variant):makeSVGSegmento(lv.variant); g1Locked=false; }
+    function answerG1(c){ if(g1Locked) return; playSound('tap'); totalAttempts++; const lv=g1Levels[g1Index]; if(c===lv.type){playSound('correct');g1Index++;document.getElementById('progressFillGame1').style.width=`${(g1Index/6)*100}%`;if(g1Index>=6){stopTimer();startGame2();}else loadG1();} else {playSound('error');g1Locked=true;const btn=document.getElementById({recta:'btnRecta1',semirrecta:'btnSemirrecta1',segmento:'btnSegmento1'}[c]);btn.classList.add('btn-answer-wrong');setTimeout(()=>{btn.classList.remove('btn-answer-wrong');g1Locked=false;},700);}}
+    document.getElementById('btnRecta1').addEventListener('click', ()=>answerG1('recta')); document.getElementById('btnSemirrecta1').addEventListener('click', ()=>answerG1('semirrecta')); document.getElementById('btnSegmento1').addEventListener('click', ()=>answerG1('segmento'));
+
+    function startGame2(){ showScreen('game2Screen'); g2Levels = shuffleNoConsecutive(game2Levels); g2Index = 0; startTimer('timerGame2'); loadG2(); }
+    function loadG2(){ if(g2Index>=g2Levels.length){stopTimer();startGame3();return;} const lv=g2Levels[g2Index]; document.getElementById('levelGame2').textContent=`Nivel ${g2Index+1}/6`; document.getElementById('progressFillGame2').style.width=`${(g2Index/6)*100}%`; document.getElementById('svgDisplay2').innerHTML=lv.type==='paralelas'?makeSVGParalelas(lv.variant):lv.type==='perpendiculares'?makeSVGPerpendiculares(lv.variant):makeSVGSecantes(lv.variant); g2Locked=false; }
+    function answerG2(c){ if(g2Locked) return; playSound('tap'); totalAttempts++; const lv=g2Levels[g2Index]; if(c===lv.type){playSound('correct');g2Index++;document.getElementById('progressFillGame2').style.width=`${(g2Index/6)*100}%`;if(g2Index>=6){stopTimer();startGame3();}else loadG2();} else {playSound('error');g2Locked=true;const btn=document.getElementById({secantes:'btnSecantes2',paralelas:'btnParalelas2',perpendiculares:'btnPerpendiculares2'}[c]);btn.classList.add('btn-answer-wrong');setTimeout(()=>{btn.classList.remove('btn-answer-wrong');g2Locked=false;},700);}}
+    document.getElementById('btnSecantes2').addEventListener('click', ()=>answerG2('secantes')); document.getElementById('btnParalelas2').addEventListener('click', ()=>answerG2('paralelas')); document.getElementById('btnPerpendiculares2').addEventListener('click', ()=>answerG2('perpendiculares'));
+
+    function startGame3(){ showScreen('game3Screen'); g3Levels = shuffleNoConsecutive(game3Levels); g3Index = 0; startTimer('timerGame3'); loadG3(); }
+    function loadG3(){ if(g3Index>=g3Levels.length){stopTimer();startGame4();return;} const lv=g3Levels[g3Index]; g3Locked=false; document.getElementById('levelGame3').textContent=`Nivel ${g3Index+1}/6`; document.getElementById('progressFillGame3').style.width=`${(g3Index/6)*100}%`; document.getElementById('svgDisplay3').innerHTML=makeSVGAngulo3(lv.angle,lv.target); ['btnLadosP','btnVerticeP','btnAberturaP'].forEach(id=>{document.getElementById(id).classList.remove('correct-parte','wrong-parte');}); }
+    function answerG3(c){ if(g3Locked) return; playSound('tap'); totalAttempts++; const lv=g3Levels[g3Index]; if(c===lv.target){playSound('correct');g3Locked=true;document.getElementById({lados:'btnLadosP',vertice:'btnVerticeP',abertura:'btnAberturaP'}[c]).classList.add('correct-parte');setTimeout(()=>{g3Index++;document.getElementById('progressFillGame3').style.width=`${(g3Index/6)*100}%`;if(g3Index>=6){stopTimer();startGame4();}else loadG3();},900);} else {playSound('error');g3Locked=true;const btn=document.getElementById({lados:'btnLadosP',vertice:'btnVerticeP',abertura:'btnAberturaP'}[c]);btn.classList.add('wrong-parte');setTimeout(()=>{btn.classList.remove('wrong-parte');g3Locked=false;},700);}}
+    document.getElementById('btnLadosP').addEventListener('click', ()=>answerG3('lados')); document.getElementById('btnVerticeP').addEventListener('click', ()=>answerG3('vertice')); document.getElementById('btnAberturaP').addEventListener('click', ()=>answerG3('abertura'));
+
+    function startGame4(){ showScreen('game4Screen'); g4Levels = shuffleNoConsecutive(game4Levels); g4Index = 0; startTimer('timerGame4'); loadG4(); }
+    function loadG4(){ if(g4Index>=g4Levels.length){stopTimer();startGame5();return;} const lv=g4Levels[g4Index]; document.getElementById('levelGame4').textContent=`Nivel ${g4Index+1}/10`; document.getElementById('progressFillGame4').style.width=`${(g4Index/10)*100}%`; const baseAngle=Math.floor(Math.random()*360); document.getElementById('svgDisplay4').innerHTML=makeSVGAnguloTipo(lv.angle,baseAngle); g4Locked=false; }
+    function answerG4(c){ if(g4Locked) return; playSound('tap'); totalAttempts++; const lv=g4Levels[g4Index]; if(c===lv.type){playSound('correct');g4Index++;document.getElementById('progressFillGame4').style.width=`${(g4Index/10)*100}%`;if(g4Index>=10){stopTimer();startGame5();}else loadG4();} else {playSound('error');g4Locked=true;const btn=document.getElementById({agudo:'btnAgudo4',recto:'btnRecto4',obtuso:'btnObtuso4',llano:'btnLlano4',completo:'btnCompleto4'}[c]);btn.classList.add('btn-answer-wrong');setTimeout(()=>{btn.classList.remove('btn-answer-wrong');g4Locked=false;},700);}}
+    document.getElementById('btnAgudo4').addEventListener('click', ()=>answerG4('agudo')); document.getElementById('btnRecto4').addEventListener('click', ()=>answerG4('recto')); document.getElementById('btnObtuso4').addEventListener('click', ()=>answerG4('obtuso')); document.getElementById('btnLlano4').addEventListener('click', ()=>answerG4('llano')); document.getElementById('btnCompleto4').addEventListener('click', ()=>answerG4('completo'));
+
+    function startGame5(){
+        showScreen('game5Screen'); g5Index = 0; startTimer('timerGame5');
+        const degrees = [30, 40, 50, 60, 70, 80, 100, 110, 120, 130, 140, 150, 160];
+        g5Data = [
+            {angle: degrees[Math.floor(Math.random() * degrees.length)]},
+            {angle: degrees[Math.floor(Math.random() * degrees.length)]},
+            {angle: degrees[Math.floor(Math.random() * degrees.length)]},
+            {angle: degrees[Math.floor(Math.random() * degrees.length)]}
+        ];
+        loadG5();
+    }
+    function loadG5(){ if(g5Index>=g5Data.length){stopTimer();finishGame();return;} const lv=g5Data[g5Index]; g5Locked=false; document.getElementById('levelGame5').textContent=`Nivel ${g5Index+1}/4`; document.getElementById('progressFillGame5').style.width=`${(g5Index/4)*100}%`; document.getElementById('svgDisplay5').innerHTML=makeSVGTransportador(lv.angle); currentAngleDeg=0; setTimeout(()=>{setupDrag();},0); }
+    function setupDrag(){ svgEl=document.getElementById('protSvg');redArm=document.getElementById('redArm');redHandle=document.getElementById('redHandle');angleCounter=document.getElementById('angleCounter'); if(!svgEl)return; svgPoint=svgEl.createSVGPoint(); redHandle.addEventListener('pointerdown',startDrag); svgEl.addEventListener('pointermove',drag); svgEl.addEventListener('pointerup',endDrag); svgEl.addEventListener('pointerleave',endDrag); }
+    function getMouseSVGCoord(evt){svgPoint.x=evt.clientX;svgPoint.y=evt.clientY;return svgPoint.matrixTransform(svgEl.getScreenCTM().inverse());} 
+    function startDrag(evt){isDragging=true;evt.target.setPointerCapture(evt.pointerId);} 
+    function drag(evt){
+        if(!isDragging)return; 
+        const pt=getMouseSVGCoord(evt); 
+        const cx=200,cy=210,armLen=150; 
+        const dx=pt.x-cx;const dy=pt.y-cy; 
+        let rad=Math.atan2(-dy,dx);
+        
+        // ✅ CORREGIDO: Clamp correcto del ángulo a [0°, 180°]
+        let deg = rad * 180 / Math.PI;
+        if (deg < 0) deg += 360;
+        currentAngleDeg = Math.max(0, Math.min(180, Math.round(deg)));
+        
+        rad = currentAngleDeg * Math.PI / 180; 
+        const ex=cx+armLen*Math.cos(rad);const ey=cy-armLen*Math.sin(rad); 
+        redArm.setAttribute('x2',ex.toFixed(1));redArm.setAttribute('y2',ey.toFixed(1)); 
+        redHandle.setAttribute('cx',ex.toFixed(1));redHandle.setAttribute('cy',ey.toFixed(1)); 
+        angleCounter.textContent=currentAngleDeg+'°';
+    }
+    function endDrag(){isDragging=false;}
+
+    document.getElementById('checkAngle5').addEventListener('click', function(){ if(g5Locked)return;playSound('tap');totalAttempts++; const lv=g5Data[g5Index]; if(Math.abs(currentAngleDeg-lv.angle)<=5){playSound('correct');g5Locked=true;angleCounter.classList.add('correct-text');setTimeout(()=>{g5Index++;document.getElementById('progressFillGame5').style.width=`${(g5Index/4)*100}%`;if(g5Index>=4){stopTimer();finishGame();}else loadG5();},900);} else {playSound('error');g5Locked=true;angleCounter.classList.add('wrong-text');setTimeout(()=>{angleCounter.classList.remove('wrong-text');g5Locked=false;},700);}});
+
+    function finishGame(){ stopTimer();const score=calcScore(); document.getElementById('finalScore').textContent=score; document.getElementById('finalTime').textContent=formatTime(elapsed); document.getElementById('finalAttempts').textContent=totalAttempts; const trophyBox=document.getElementById('trophyBox');const msg=document.getElementById('finalMsg'); if(score===100){trophyBox.style.display='block';msg.textContent='¡Genial! ¡Puntuación perfecta! 🎉';playSound('victory');createConfetti();} else if(score>=80){trophyBox.style.display='none';msg.textContent='¡Casi perfecto! Sigue practicando.';playSound('completed');} else if(score>=50){trophyBox.style.display='none';msg.textContent='No está mal, pero puedes mejorar.';playSound('completed');} else {trophyBox.style.display='none';msg.textContent='Vaya... ¿Has repasado el tema? 📚';playSound('completed');} showScreen('finalScreen'); }
+    function createConfetti(){ for(let i=0;i<100;i++){setTimeout(()=>{const c=document.createElement('div');c.className='confetti';const x=Math.random()*window.innerWidth;const tx=(Math.random()-.5)*200;c.style.left=x+'px';c.style.top='-10px';c.style.backgroundColor=['#ff595e','#1982c4','#6a4c93','#ffca3a','#8ac926'][Math.floor(Math.random()*5)];c.style.setProperty('--tx',tx+'px');c.style.setProperty('--ty',window.innerHeight+20+'px');document.body.appendChild(c);setTimeout(()=>c.remove(),3000);},i*20);} }
+
+    document.getElementById('startBtn').addEventListener('click', function(){ playSound('tap');totalAttempts=0;elapsed=0;startGame1(); });
+    document.getElementById('backToMenuBtn').addEventListener('click', function(){ playSound('tap');location.reload(); });
+});
+</script>
+</body>
+</html>
